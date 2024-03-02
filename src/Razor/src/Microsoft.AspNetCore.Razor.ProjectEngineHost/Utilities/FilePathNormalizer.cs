@@ -16,7 +16,7 @@ internal static class FilePathNormalizer
 {
     private static Lazy<IEqualityComparer<string>> _lazyComparer = new Lazy<IEqualityComparer<string>>(() => new FilePathNormalizingComparer());
     public static IEqualityComparer<string> Comparer => _lazyComparer.Value;
-
+    
     private class FilePathNormalizingComparer : IEqualityComparer<string>
     {
         public bool Equals(string? x, string? y) => FilePathNormalizer.FilePathsEquivalent(x, y);
@@ -138,7 +138,7 @@ internal static class FilePathNormalizer
             return filePath.GetHashCode();
         }
 
-        var filePathSpan = filePath.AsSpanOrDefault();
+        var filePathSpan  = FilePathComparison.Instance == StringComparison.OrdinalIgnoreCase ? filePath.ToLower().AsSpanOrDefault() : filePath.AsSpanOrDefault();
 
         using var _ = ArrayPool<char>.Shared.GetPooledArray(filePathSpan.Length, out var array1);
         var normalizedSpan = NormalizeCoreAndGetSpan(filePathSpan, array1);
